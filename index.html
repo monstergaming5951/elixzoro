@@ -1,283 +1,526 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ELIXZORO | Wear Legacy</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{--gold:#d4b16a;--bg:#101010;--panel:#1b1b1b;--muted:#aaa79f;--line:#36332c}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#f6f4ef;font-family:Arial,sans-serif}
-header{padding:20px 6%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
-.brand{font-weight:900;letter-spacing:4px}.brand small{display:block;color:var(--gold);font-size:10px;margin-top:6px}
-main{max-width:950px;margin:40px auto;padding:0 18px}
-h1{font-size:clamp(30px,6vw,48px);margin:12px 0}
-h2{font-size:19px}.gold{color:var(--gold)}.muted{color:var(--muted)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px;margin:18px 0}
-input,select{width:100%;padding:13px;margin:7px 0 13px;background:#101010;border:1px solid #444;color:white;border-radius:7px}
-button{background:var(--gold);border:1px solid var(--gold);padding:12px 16px;border-radius:7px;font-weight:bold;cursor:pointer}
-button.secondary{background:transparent;color:var(--gold)}
-button:disabled{opacity:.5;cursor:not-allowed}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.row button{flex:1}
-.stamps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:25px 0}
-.stamp{aspect-ratio:1;border:1px dashed #665d49;border-radius:50%;display:grid;place-items:center;color:#999;font-size:22px}
-.stamp.done{background:var(--gold);color:#15120c;border-style:solid}
-.progress{height:7px;background:#39362f;border-radius:10px;overflow:hidden}
-.progress div{height:100%;background:var(--gold)}
-.item{padding:13px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
-.notice{color:#e3ce9c;background:#282319;padding:14px;border-radius:8px;font-size:13px;line-height:1.6}
-.hidden{display:none!important}
-#message{white-space:pre-wrap;margin:14px 0;font-size:13px;line-height:1.6}
-footer{text-align:center;color:var(--muted);padding:30px;font-size:11px}
-@media(max-width:480px){header{padding:17px}.card{padding:17px}.stamps{gap:6px}.stamp{font-size:18px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ELIXZORO | Loyalty Club</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --gold:#d4b16a; --bg:#101010; --panel:#191919;
+      --line:#35332d; --text:#f6f4ef; --muted:#aaa79f;
+      --green:#9ad2a5; --red:#ff9e9e;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);
+      font:15px Inter,system-ui,Arial,sans-serif}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    header{display:flex;justify-content:space-between;align-items:center;
+      gap:14px;padding:20px clamp(16px,5vw,60px);
+      border-bottom:1px solid var(--line);flex-wrap:wrap}
+    .brand{font-weight:900;letter-spacing:.15em}
+    .brand small{display:block;color:var(--gold);font-size:10px;margin-top:5px}
+    nav{display:flex;gap:8px;flex-wrap:wrap}
+    main{max-width:1050px;margin:auto;padding:35px 18px 60px}
+    h1{font-size:clamp(32px,6vw,54px);letter-spacing:-.05em;margin:12px 0}
+    h2{font-size:17px}
+    p{line-height:1.65}
+    .muted{color:var(--muted)}
+    .eyebrow{font-size:10px;letter-spacing:.2em;color:var(--gold);font-weight:800}
+    .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+    .panel{background:var(--panel);border:1px solid var(--line);
+      border-radius:15px;padding:22px;margin-bottom:18px;min-width:0}
+    .hero{margin-bottom:25px}
+    .card{border:1px solid #55472d;border-radius:14px;padding:22px;
+      background:radial-gradient(ellipse at top right,#3a3020,transparent 65%),#151515}
+    .stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:26px 0}
+    .stamp{aspect-ratio:1;border:1px dashed #605a4d;border-radius:50%;
+      display:grid;place-items:center;text-align:center;color:var(--muted);font-size:20px}
+    .stamp small{font-size:8px;display:block}
+    .stamp.done{background:var(--gold);border:1px solid var(--gold);color:#15120c}
+    .progress{height:6px;background:#38352e;border-radius:20px;overflow:hidden;margin:12px 0}
+    .progress div{height:100%;background:var(--gold)}
+    .btn{border:1px solid var(--gold);background:var(--gold);color:#17130a;
+      border-radius:7px;padding:11px 15px;font-weight:800;font-size:12px}
+    .btn.secondary,nav button{background:transparent;color:var(--text);
+      border:1px solid var(--line);border-radius:7px;padding:10px 12px}
+    nav button.active{border-color:var(--gold);color:var(--gold)}
+    input{width:100%;padding:12px;background:#101010;color:white;
+      border:1px solid var(--line);border-radius:7px;margin:7px 0 14px}
+    label{font-size:12px;color:var(--muted)}
+    .row{display:flex;justify-content:space-between;align-items:center;
+      gap:12px;padding:14px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+    .row:last-child{border-bottom:0}
+    .badge{font-size:11px;border:1px solid #4b493e;padding:6px 9px;border-radius:30px}
+    .notice{padding:12px;border:1px solid #51452e;color:#e3d1a3;
+      border-radius:8px;font-size:12px;line-height:1.6;margin:15px 0}
+    .error{color:var(--red);font-size:13px;white-space:pre-wrap}
+    .success{color:var(--green);font-size:13px}
+    .hidden{display:none!important}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .customer{border-bottom:1px solid var(--line);padding:14px 0}
+    footer{padding:25px;text-align:center;border-top:1px solid var(--line);
+      color:var(--muted);font-size:11px}
+    @media(max-width:700px){.grid{grid-template-columns:1fr}header{align-items:flex-start}
+      .stamps{gap:6px}.stamp{font-size:17px}.panel{padding:17px}}
+  </style>
 </head>
 <body>
 <header>
-  <div class="brand">ELIXZORO<small>WEAR LEGACY</small></div>
-  <button id="logout" class="secondary hidden">LOG OUT</button>
+  <div class="brand">ELIXZORO<small>WEAR LEGACY · LOYALTY CLUB</small></div>
+  <nav id="nav" class="hidden">
+    <button data-page="card" class="active">MY CARD</button>
+    <button data-page="history">HISTORY</button>
+    <button data-page="admin" id="adminTab" class="hidden">ADMIN</button>
+    <button id="logout">LOG OUT</button>
+  </nav>
 </header>
 
 <main>
-  <div class="gold">YOUR LOYALTY. YOUR LEGACY.</div>
-  <h1>Every jersey brings you <span class="gold">closer.</span></h1>
-  <p class="muted">Collect 10 verified stamps and get one free jersey.</p>
-  <div id="message" role="status"></div>
-
-  <section id="auth" class="card">
-    <h2>Welcome to Elixzoro</h2>
-    <p class="muted">Create your account or log in to see your personal stamp card.</p>
-    <label for="name">Full name (for new accounts)</label>
-    <input id="name" autocomplete="name" placeholder="Your full name">
-    <label for="email">Email address</label>
-    <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
-    <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters">
-    <div class="row">
-      <button id="login">LOG IN</button>
-      <button id="signup" class="secondary">CREATE ACCOUNT</button>
+  <section id="auth">
+    <div class="hero">
+      <div class="eyebrow">YOUR LOYALTY. YOUR LEGACY.</div>
+      <h1>Every jersey<br>gets you closer.</h1>
+      <p class="muted">Collect 10 verified stamps and earn a free jersey.</p>
     </div>
-    <p class="muted" style="font-size:12px">You may need to verify your email before logging in.</p>
-  </section>
-
-  <section id="dashboard" class="hidden">
-    <div class="card">
-      <div class="gold">MEMBER STAMP CARD</div>
-      <h2>Welcome, <span id="memberName">Member</span></h2>
-      <p class="muted">Your stamps are private to your account.</p>
-      <div class="row">
-        <div><strong id="stampCount">0 / 10</strong><p class="muted">Current season</p></div>
-        <div><strong id="rewardCount">0</strong><p class="muted">Rewards earned</p></div>
-      </div>
-      <div class="stamps" id="stamps"></div>
-      <div class="progress"><div id="progress" style="width:0%"></div></div>
-      <p id="progressText" class="gold"></p>
-    </div>
-    <div class="card">
-      <h2>Your activity</h2>
-      <div id="history" class="muted">Loading activity...</div>
-    </div>
-    <div id="admin" class="card hidden">
-      <div class="gold">OWNER CONTROL CENTRE</div>
-      <h2>Admin dashboard</h2>
-      <p class="muted">Only your authorized admin account can manage stamps.</p>
-      <label for="customerEmail">Customer's registered email</label>
-      <input id="customerEmail" type="email" placeholder="customer@example.com">
-      <label for="receipt">Verified purchase / receipt reference</label>
-      <input id="receipt" placeholder="ELX-2026-001">
-      <button id="award" style="width:100%">VERIFY PURCHASE & AWARD STAMP</button>
-      <h2 style="margin-top:28px">Recent purchases</h2>
-      <div id="adminHistory" class="muted">Loading records...</div>
+    <div class="panel">
+      <h2 id="authTitle">Join Elixzoro Loyalty Club</h2>
+      <p class="muted" id="authDescription">Create your customer account.</p>
+      <form id="authForm">
+        <div id="nameField">
+          <label for="fullName">FULL NAME</label>
+          <input id="fullName" autocomplete="name" maxlength="100" required>
+          <label for="phone">PHONE (OPTIONAL)</label>
+          <input id="phone" autocomplete="tel" maxlength="20">
+        </div>
+        <label for="email">EMAIL ADDRESS</label>
+        <input id="email" type="email" autocomplete="email" required>
+        <label for="password">PASSWORD</label>
+        <input id="password" type="password" minlength="6"
+          autocomplete="current-password" required>
+        <button class="btn" id="authSubmit" type="submit">CREATE ACCOUNT</button>
+      </form>
+      <p><button id="toggleAuth" class="btn secondary">Already registered? Log in</button></p>
+      <p id="authMessage" role="status"></p>
     </div>
   </section>
-  <p class="notice">Important: Stamps are awarded only after a real purchase is verified by Elixzoro. Never share your password. Your account cannot award itself stamps.</p>
+
+  <section id="app" class="hidden">
+    <div id="content"></div>
+    <p id="message" role="status"></p>
+  </section>
 </main>
-<footer>ELIXZORO® · WEAR LEGACY</footer>
+<footer>ELIXZORO® · WEAR LEGACY.</footer>
 
 <script>
-const SUPABASE_URL = "https://arnbkbogdpgpbjtinbcv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_V3HIo_sXnnrZ0zOBS8Jceg_RiHhZQOi0";
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(() => {
+  "use strict";
 
-let currentUser = null;
-let isAdmin = false;
+  const SUPABASE_URL = "https://arnbkbogdpgpbjtinbcv.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_V3HIo_sXnnrZ0zOBS8Jceg_RiHhZQOi0";
 
-const $ = id => document.getElementById(id);
+  const db = window.supabase.createClient(
+    SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+  );
 
-function message(text) { $("message").textContent = text; }
+  const $ = id => document.getElementById(id);
+  let user = null;
+  let profile = null;
+  let page = "card";
+  let isLogin = false;
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  })[c]);
-}
-
-function dateText(value) {
-  return value ? new Date(value).toLocaleDateString() : "";
-}
-
-async function check(result) {
-  if (result.error) throw result.error;
-  return result.data;
-}
-
-async function profileFor(userId) {
-  const data = await check(await db.from("profiles")
-    .select("id,full_name,role")
-    .eq("id", userId)
-    .maybeSingle());
-
-  if (data) return data;
-
-  const user = await db.auth.getUser();
-  const name = user.data.user?.user_metadata?.full_name || "Member";
-
-  return await check(await db.from("profiles")
-    .insert({id:userId, full_name:name, role:"customer"})
-    .select("id,full_name,role").single());
-}
-
-async function login() {
-  message("");
-  const {error} = await db.auth.signInWithPassword({
-    email:$("email").value.trim(),
-    password:$("password").value
-  });
-  if (error) throw error;
-  await start();
-}
-
-async function signup() {
-  message("");
-  const name = $("name").value.trim();
-  const email = $("email").value.trim();
-  const password = $("password").value;
-
-  if (!name) throw Error("Enter your full name.");
-  if (password.length < 8) throw Error("Use a password with at least 8 characters.");
-
-  const {data,error} = await db.auth.signUp({
-    email, password,
-    options:{data:{full_name:name}}
-  });
-  if (error) throw error;
-
-  if (!data.session) {
-    message("Account created! Check your email for the verification link, then log in.");
-    return;
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;",
+      '"':"&quot;", "'":"&#39;"
+    })[c]);
   }
-  await start();
-}
 
-async function start() {
-  message("Loading your secure account...");
-  const {data,error} = await db.auth.getSession();
-  if (error) throw error;
+  function say(text, error = false) {
+    $("message").className = error ? "error" : "success";
+    $("message").textContent = text;
+  }
 
-  currentUser = data.session?.user || null;
-  if (!currentUser) {
+  function authSay(text, error = false) {
+    $("authMessage").className = error ? "error" : "success";
+    $("authMessage").textContent = text;
+  }
+
+  function fail(error) {
+    console.error(error);
+    say(error?.message || "Something went wrong.", true);
+  }
+
+  function date(value) {
+    return value ? new Date(value).toLocaleDateString(undefined, {
+      day:"numeric", month:"short", year:"numeric"
+    }) : "—";
+  }
+
+  function showSignedOut() {
+    user = null;
+    profile = null;
     $("auth").classList.remove("hidden");
-    $("dashboard").classList.add("hidden");
-    $("logout").classList.add("hidden");
-    message("");
-    return;
+    $("app").classList.add("hidden");
+    $("nav").classList.add("hidden");
   }
 
-  const profile = await profileFor(currentUser.id);
-  isAdmin = profile.role === "admin";
-
-  $("auth").classList.add("hidden");
-  $("dashboard").classList.remove("hidden");
-  $("logout").classList.remove("hidden");
-  $("admin").classList.toggle("hidden", !isAdmin);
-  $("memberName").textContent = profile.full_name || currentUser.email;
-  await loadCard();
-
-  if (isAdmin) await loadAdminHistory();
-  message("");
-}
-
-async function loadCard() {
-  const seasons = await check(await db.from("loyalty_seasons")
-    .select("*").eq("user_id",currentUser.id)
-    .order("season_number",{ascending:true}));
-
-  const rewards = await check(await db.from("rewards")
-    .select("*").eq("user_id",currentUser.id)
-    .order("created_at",{ascending:false}));
-
-  const season = seasons?.[seasons.length-1];
-  const stamps = Math.min(10,season?.stamps || 0);
-
-  $("stampCount").textContent = `${stamps} / 10`;
-  $("rewardCount").textContent = String(rewards?.length || 0);
-  $("stamps").innerHTML = Array.from({length:10},(_,i)=>
-    `<div class="stamp ${i<stamps?"done":""}">${i<stamps?"✓":i+1}</div>`
-  ).join("");
-  $("progress").style.width = `${stamps*10}%`;
-  $("progressText").textContent = stamps===10
-    ? "Season complete! Your reward is recorded."
-    : `${10-stamps} more stamp${10-stamps===1?"":"s"} until your free jersey.`;
-
-  const purchases = await check(await db.from("purchases")
-    .select("receipt_ref,stamp_number,created_at,season_id")
-    .eq("user_id",currentUser.id).order("created_at",{ascending:false}));
-
-  $("history").innerHTML = purchases?.length
-    ? purchases.map(p=>`<div class="item">✓ Stamp ${p.stamp_number} · ${escapeHTML(p.receipt_ref)}<br><small>${dateText(p.created_at)}</small></div>`).join("")
-    : '<p>No stamps yet. Your journey starts with your first verified purchase.</p>';
-
-  if (rewards?.length) {
-    $("history").innerHTML += rewards.map(r=>
-      `<div class="item gold">✦ Free jersey reward · ${escapeHTML(r.status)}</div>`
-    ).join("");
+  async function loadProfile() {
+    const { data, error } = await db.from("profiles")
+      .select("id,full_name,phone,is_admin")
+      .eq("id", user.id).maybeSingle();
+    if (error) throw error;
+    if (!data) {
+      throw new Error(
+        "Your profile is not ready. Please finish registration or contact the shop admin."
+      );
+    }
+    profile = data;
+    $("adminTab").classList.toggle("hidden", !profile.is_admin);
   }
-}
 
-async function awardStamp() {
-  if (!isAdmin) throw Error("Admin access required.");
+  async function startSession(sessionUser) {
+    user = sessionUser;
+    if (!user) {
+      showSignedOut();
+      return;
+    }
 
-  const email = $("customerEmail").value.trim().toLowerCase();
-  const receipt = $("receipt").value.trim();
+    $("auth").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("nav").classList.remove("hidden");
 
-  if (!email || !receipt) throw Error("Enter the customer's email and receipt reference.");
-  if (!confirm(`Only continue if you verified this purchase.\nAward one stamp for receipt ${receipt}?`)) return;
+    try {
+      await loadProfile();
+      await render();
+    } catch (error) {
+      fail(error);
+    }
+  }
 
-  // Resolve the customer using their profile email via a restricted RPC
-  // would expose account information if implemented as an unrestricted query.
-  // A server-side admin-only RPC is required for this operation.
-  throw Error("Admin stamp awarding needs the secure award_stamp RPC to be installed first. This safety check prevents an insecure browser-side award.");
-}
+  $("toggleAuth").onclick = () => {
+    isLogin = !isLogin;
+    $("nameField").classList.toggle("hidden", isLogin);
+    $("fullName").required = !isLogin;
+    $("phone").required = false;
+    $("authTitle").textContent = isLogin ? "Welcome back" : "Join Elixzoro Loyalty Club";
+    $("authDescription").textContent = isLogin
+      ? "Log in to view your loyalty card."
+      : "Create your customer account.";
+    $("authSubmit").textContent = isLogin ? "LOG IN" : "CREATE ACCOUNT";
+    $("toggleAuth").textContent = isLogin
+      ? "New here? Create an account"
+      : "Already registered? Log in";
+    $("password").autocomplete = isLogin ? "current-password" : "new-password";
+    authSay("");
+  };
 
-async function loadAdminHistory() {
-  if (!isAdmin) return;
-  const rows = await check(await db.from("purchases")
-    .select("receipt_ref,stamp_number,created_at,user_id")
-    .order("created_at",{ascending:false}).limit(20));
+  $("authForm").onsubmit = async event => {
+    event.preventDefault();
+    $("authSubmit").disabled = true;
+    authSay("Please wait…");
 
-  $("adminHistory").innerHTML = rows?.length
-    ? rows.map(p=>`<div class="item">Stamp ${p.stamp_number} · ${escapeHTML(p.receipt_ref)}<br><small>${dateText(p.created_at)} · Member ID ${escapeHTML(p.user_id)}</small></div>`).join("")
-    : "<p>No purchases recorded yet.</p>";
-}
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    try {
+      if (isLogin) {
+        const { data, error } = await db.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await startSession(data.user);
+      } else {
+        const fullName = $("fullName").value.trim();
+        const phone = $("phone").value.trim();
+        if (!fullName) throw new Error("Please enter your name.");
 
-$("login").onclick = () => login().catch(e=>message(e.message));
-$("signup").onclick = () => signup().catch(e=>message(e.message));
-$("award").onclick = () => awardStamp().catch(e=>message(e.message));
-$("logout").onclick = async () => {
-  const {error} = await db.auth.signOut();
-  if (error) message(error.message);
-  else {isAdmin=false;currentUser=null;await start();}
-};
+        const { data, error } = await db.auth.signUp({
+          email, password,
+          options: { data: { full_name: fullName } }
+        });
+        if (error) throw error;
 
-db.auth.onAuthStateChange((_event,session)=>{
-  currentUser=session?.user||null;
-  setTimeout(()=>start().catch(e=>message(e.message)),0);
-});
+        if (data.session) {
+          user = data.user;
+          const { error: setupError } = await db.rpc("setup_my_profile", {
+            p_full_name: fullName,
+            p_phone: phone || null
+          });
+          if (setupError) throw setupError;
+          await startSession(data.user);
+        } else {
+          authSay("Account created! Check your email to confirm it, then log in.");
+          isLogin = true;
+          $("toggleAuth").click();
+        }
+      }
+    } catch (error) {
+      authSay(error.message || "Authentication failed.", true);
+    } finally {
+      $("authSubmit").disabled = false;
+    }
+  };
 
-start().catch(e=>message("Setup issue: "+e.message));
+  $("logout").onclick = async () => {
+    const { error } = await db.auth.signOut();
+    if (error) return fail(error);
+    showSignedOut();
+  };
+
+  $("nav").querySelectorAll("[data-page]").forEach(button => {
+    button.onclick = async () => {
+      if (button.dataset.page === "admin" && !profile?.is_admin) {
+        return say("Admin access required.", true);
+      }
+      page = button.dataset.page;
+      $("nav").querySelectorAll("[data-page]").forEach(b =>
+        b.classList.toggle("active", b === button)
+      );
+      await render();
+    };
+  });
+
+  async function getCard(customerId = user.id) {
+    const { data, error } = await db.from("loyalty_cards")
+      .select("user_id,stamps,season,updated_at")
+      .eq("user_id", customerId).maybeSingle();
+    if (error) throw error;
+    return data || { user_id:customerId, stamps:0, season:1 };
+  }
+
+  async function render() {
+    if (!user || !profile) return;
+    $("message").textContent = "";
+    if (page === "admin") return renderAdmin();
+    if (page === "history") return renderHistory();
+    return renderCard();
+  }
+
+  async function renderCard() {
+    const [card, purchasesResult, rewardsResult] = await Promise.all([
+      getCard(),
+      db.from("purchases").select("id,receipt,season,stamp_number,created_at")
+        .eq("customer_id", user.id).order("created_at", { ascending:false }).limit(10),
+      db.from("rewards").select("id,season,status,unlocked_at,redeemed_at")
+        .eq("customer_id", user.id).order("season", { ascending:false })
+    ]);
+
+    if (purchasesResult.error) throw purchasesResult.error;
+    if (rewardsResult.error) throw rewardsResult.error;
+
+    const stamps = Math.min(9, Number(card.stamps) || 0);
+    const rewards = rewardsResult.data || [];
+
+    $("content").innerHTML = `
+      <div class="hero">
+        <div class="eyebrow">ELIXZORO MEMBER</div>
+        <h1>Welcome back,<br>${esc(profile.full_name.split(" ")[0])}.</h1>
+        <p class="muted">Your loyalty journey continues here.</p>
+      </div>
+      <div class="grid">
+        <section class="panel">
+          <div class="eyebrow">YOUR DIGITAL STAMP CARD</div>
+          <h2>SEASON ${String(card.season).padStart(2,"0")}</h2>
+          <p class="muted">10 verified jersey purchases = 1 free jersey.</p>
+          <div class="card">
+            <div class="stamps">
+              ${Array.from({length:10},(_,i)=>`
+                <div class="stamp ${i < stamps ? "done" : ""}">
+                  <div>${i < stamps ? "✓" : i+1}
+                    <small>${i < stamps ? "EARNED" : "STAMP"}</small>
+                  </div>
+                </div>`).join("")}
+            </div>
+            <strong>${stamps}/10 stamps collected</strong>
+            <div class="progress"><div style="width:${stamps*10}%"></div></div>
+            <p class="muted">${10-stamps} more to your free jersey.</p>
+          </div>
+          <h2>Recent purchases</h2>
+          ${(purchasesResult.data || []).length
+            ? purchasesResult.data.map(p=>`
+              <div class="row">
+                <div><strong>Stamp ${p.stamp_number} · Season ${p.season}</strong>
+                <div class="muted">${esc(p.receipt)} · ${date(p.created_at)}</div></div>
+                <span class="badge">VERIFIED</span>
+              </div>`).join("")
+            : `<p class="muted">Your verified purchases will appear here.</p>`}
+        </section>
+        <aside>
+          <div class="panel">
+            <div class="eyebrow">YOUR REWARDS</div>
+            <h2>${rewards.filter(r=>r.status==="unlocked").length} available reward(s)</h2>
+            ${rewards.length ? rewards.map(r=>`
+              <div class="row">
+                <div><strong>Season ${r.season}</strong>
+                <div class="muted">Unlocked ${date(r.unlocked_at)}</div></div>
+                <span class="badge">${esc(r.status.toUpperCase())}</span>
+              </div>`).join("") : `<p class="muted">Complete a season to unlock a reward.</p>`}
+          </div>
+          <div class="notice">🔒 Stamps can only be awarded by an authorised Elixzoro admin after a purchase is verified.</div>
+        </aside>
+      </div>`;
+  }
+
+  async function renderHistory() {
+    const [p, r] = await Promise.all([
+      db.from("purchases").select("*").eq("customer_id",user.id)
+        .order("created_at",{ascending:false}),
+      db.from("rewards").select("*").eq("customer_id",user.id)
+        .order("season",{ascending:false})
+    ]);
+    if (p.error) throw p.error;
+    if (r.error) throw r.error;
+
+    $("content").innerHTML = `
+      <div class="hero"><div class="eyebrow">YOUR LOYALTY JOURNEY</div>
+      <h1>History.</h1><p class="muted">Your verified purchases and rewards.</p></div>
+      <div class="panel"><h2>PURCHASES</h2>
+      ${(p.data||[]).length ? p.data.map(x=>`
+        <div class="row"><div><strong>Season ${x.season} · Stamp ${x.stamp_number}</strong>
+        <div class="muted">${esc(x.receipt)} · ${date(x.created_at)}</div></div>
+        <span class="badge">VERIFIED</span></div>`).join("") : `<p class="muted">No purchases yet.</p>`}
+      <h2>REWARDS</h2>
+      ${(r.data||[]).length ? r.data.map(x=>`
+        <div class="row"><div><strong>Season ${x.season}</strong>
+        <div class="muted">Unlocked ${date(x.unlocked_at)}
+        ${x.redeemed_at ? " · Redeemed "+date(x.redeemed_at) : ""}</div></div>
+        <span class="badge">${esc(x.status.toUpperCase())}</span></div>`).join("") : `<p class="muted">No rewards yet.</p>`}
+      </div>`;
+  }
+
+  async function renderAdmin() {
+    if (!profile?.is_admin) throw new Error("Admin access required.");
+
+    const [profilesResult, cardsResult, rewardsResult] = await Promise.all([
+      db.from("profiles").select("id,full_name,phone").order("created_at"),
+      db.from("loyalty_cards").select("user_id,stamps,season"),
+      db.from("rewards").select("id,customer_id,season,status,unlocked_at")
+        .order("unlocked_at",{ascending:false})
+    ]);
+    if (profilesResult.error) throw profilesResult.error;
+    if (cardsResult.error) throw cardsResult.error;
+    if (rewardsResult.error) throw rewardsResult.error;
+
+    const profiles = profilesResult.data || [];
+    const cards = Object.fromEntries((cardsResult.data||[]).map(c=>[c.user_id,c]));
+    const rewards = rewardsResult.data || [];
+
+    $("content").innerHTML = `
+      <div class="hero"><div class="eyebrow">OWNER CONTROL CENTRE</div>
+      <h1>Admin console.</h1><p class="muted">Manage members, award stamps and redeem rewards.</p></div>
+      <div class="notice">Confirm the real purchase before awarding a stamp. Receipt references can only be used once.</div>
+      <div class="grid">
+        <section class="panel">
+          <h2>AWARD A STAMP</h2>
+          <label for="customerSelect">SELECT CUSTOMER</label>
+          <select id="customerSelect" style="width:100%;padding:12px;background:#101010;color:white;margin:8px 0 15px">
+            ${profiles.map(p=>`<option value="${p.id}">${esc(p.full_name)} · ${esc(p.id.slice(0,8))}</option>`).join("")}
+          </select>
+          <label for="receipt">PURCHASE / RECEIPT REFERENCE</label>
+          <input id="receipt" maxlength="80" placeholder="e.g. ELX-2026-001">
+          <button id="awardBtn" class="btn">+ AWARD STAMP</button>
+          <p id="adminMessage" role="status"></p>
+        </section>
+        <section class="panel">
+          <h2>CUSTOMER DATABASE</h2>
+          <input id="customerSearch" placeholder="Search name, phone, ID…">
+          <div id="customerList"></div>
+        </section>
+      </div>
+      <section class="panel"><h2>REWARD REDEMPTION</h2>
+      <div id="rewardList"></div></section>`;
+
+    function drawCustomers(filter="") {
+      $("customerList").innerHTML = profiles.filter(p =>
+        (p.full_name+" "+(p.phone||"")+" "+p.id).toLowerCase().includes(filter.toLowerCase())
+      ).map(p => {
+        const c=cards[p.id]||{stamps:0,season:1};
+        return `<div class="customer">
+          <strong>${esc(p.full_name)}</strong>
+          <div class="muted">${esc(p.phone||"No phone")} · Season ${c.season} · ${c.stamps}/10 stamps</div>
+        </div>`;
+      }).join("") || `<p class="muted">No matching customers.</p>`;
+    }
+    drawCustomers();
+    $("customerSearch").oninput = e => drawCustomers(e.target.value);
+
+    $("awardBtn").onclick = async () => {
+      const customerId=$("customerSelect").value;
+      const receipt=$("receipt").value.trim();
+      if (!customerId) return adminSay("Create a customer account first.",true);
+      if (!receipt) return adminSay("Enter the receipt reference.",true);
+      $("awardBtn").disabled=true;
+      try {
+        const {data,error}=await db.rpc("award_stamp",{
+          p_customer_id:customerId,p_receipt:receipt
+        });
+        if(error) throw error;
+        adminSay(data.season_completed
+          ? "Stamp awarded! Season complete — free jersey reward unlocked."
+          : `Stamp ${data.stamp_awarded}/10 awarded successfully.`
+        );
+        await renderAdmin();
+      } catch(error) {
+        adminSay(error.message||"Could not award stamp.",true);
+      } finally {
+        const b=$("awardBtn");
+        if(b) b.disabled=false;
+      }
+    };
+
+    $("rewardList").innerHTML = rewards.length ? rewards.map(r=>{
+      const name=profiles.find(p=>p.id===r.customer_id)?.full_name||"Customer";
+      return `<div class="row"><div><strong>${esc(name)} · Season ${r.season}</strong>
+        <div class="muted">Unlocked ${date(r.unlocked_at)}</div></div>
+        <div class="actions"><span class="badge">${esc(r.status.toUpperCase())}</span>
+        ${r.status==="unlocked" ? `<button class="btn" data-redeem="${r.id}">REDEEM</button>` : ""}</div>
+      </div>`;
+    }).join("") : `<p class="muted">No rewards yet.</p>`;
+
+    $("rewardList").querySelectorAll("[data-redeem]").forEach(button=>{
+      button.onclick=async()=>{
+        if(!confirm("Confirm the free jersey has been handed to this customer?")) return;
+        button.disabled=true;
+        try {
+          const {error}=await db.rpc("redeem_reward",{p_reward_id:button.dataset.redeem});
+          if(error) throw error;
+          say("Reward marked as redeemed.");
+          await renderAdmin();
+        } catch(error) {
+          adminSay(error.message||"Could not redeem reward.",true);
+          button.disabled=false;
+        }
+      };
+    });
+  }
+
+  function adminSay(text,error=false) {
+    const el=$("adminMessage");
+    if(el) {
+      el.className=error?"error":"success";
+      el.textContent=text;
+    } else say(text,error);
+  }
+
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") {
+      showSignedOut();
+      return;
+    }
+    if (session?.user) {
+      user = session.user;
+      // Avoid doing database work inside the auth callback.
+      setTimeout(() => startSession(session.user),0);
+    }
+  });
+
+  db.auth.getSession().then(({data,error})=>{
+    if(error) return authSay(error.message,true);
+    if(data.session) startSession(data.session.user);
+    else showSignedOut();
+  }).catch(error=>authSay(error.message,true));
+})();
 </script>
 </body>
 </html>
