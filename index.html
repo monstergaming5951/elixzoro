@@ -28,7 +28,7 @@ input,select{width:100%;padding:12px;background:#101010;color:white;border:1px s
 <script>
 (()=>{"use strict";
 const SUPABASE_URL="https://arnbkbogdpgpbjtinbcv.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_V3HIo_sXnnrZ0zOBS8Jceg_RiHhZQOi0";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_V3HIo_sXnnrZ0zOBS8Jceg_RIhZQOi0";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const $=id=>document.getElementById(id);let user=null,profile=null,page="card",isLogin=false,sessionStartToken=0;
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
